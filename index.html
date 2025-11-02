@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Set the default font for the page */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* * The 'x' and 'o' color classes are no longer needed 
+         * as we are using images.
+         */
+        
+        /* Style for the winning cells */
+        .cell.win {
+            background-color: #4F46E5; /* Tailwind indigo-600 */
+        }
+        
+        /* Make the image in a winning cell slightly transparent */
+        /* to show the background color highlight */
+        .cell.win img {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4 transition-all duration-300">
+
+    <!-- 
+      Setup Screen
+      This is shown on load, and hidden when the game starts.
+    -->
+    <div id="setup-screen" class="w-full max-w-lg text-center">
+        <h1 class="text-5xl md:text-6xl font-black mb-12 text-center">
+            Upload Your Avatars
+        </h1>
+        
+        <div class="flex flex-col md:flex-row justify-around items-center gap-8 mb-12">
+            <!-- Player 1 Setup -->
+            <div class="flex flex-col items-center gap-4">
+                <label for="player1-input" class="text-2xl font-bold text-gray-300">Player 1</label>
+                <!-- Image Preview -->
+                <img id="player1-preview" src="https://placehold.co/128x128/374151/4B5563?text=P1" class="w-32 h-32 rounded-full object-cover bg-gray-700 shadow-lg border-4 border-gray-700">
+                <!-- Styled File Input Button -->
+                <label class="px-6 py-3 bg-green-500 text-white rounded-lg text-lg font-semibold hover:bg-green-400 transition-all duration-300 shadow-lg transform hover:scale-105 cursor-pointer">
+                    <span>Upload Image</span>
+                    <input type="file" id="player1-input" accept="image/*" class="hidden">
+                </label>
+            </div>
+            
+            <!-- Player 2 Setup -->
+            <div class="flex flex-col items-center gap-4">
+                <label for="player2-input" class="text-2xl font-bold text-gray-300">Player 2</label>
+                <!-- Image Preview -->
+                <img id="player2-preview" src="https://placehold.co/128x128/374151/4B5563?text=P2" class="w-32 h-32 rounded-full object-cover bg-gray-700 shadow-lg border-4 border-gray-700">
+                <!-- Styled File Input Button -->
+                <label class="px-6 py-3 bg-red-500 text-white rounded-lg text-lg font-semibold hover:bg-red-400 transition-all duration-300 shadow-lg transform hover:scale-105 cursor-pointer">
+                    <span>Upload Image</span>
+                    <input type="file" id="player2-input" accept="image/*" class="hidden">
+                </label>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <p id="setup-error" class="text-red-400 text-lg mb-6 hidden">
+            Please upload an image for both players.
+        </p>
+
+        <!-- Start Game Button -->
+        <button id="start-game-button" class="mt-4 px-12 py-4 bg-indigo-600 text-white rounded-lg text-2xl font-semibold hover:bg-indigo-500 transition-all duration-300 shadow-lg transform hover:scale-105">
+            Start Game
+        </button>
+    </div>
+
+    <!-- 
+      Game Screen
+      This is hidden on load, and shown when the game starts.
+    -->
+    <div id="game-screen" class="hidden flex-col items-center justify-center">
+        <!-- Game Title -->
+        <h1 class="text-5xl md:text-6xl font-black mb-8 text-center">
+            Tic-Tac-Toe
+        </h1>
+
+        <!-- Game Status Display -->
+        <h2 id="status-display" class="text-3xl font-bold mb-6">
+            Player 1's Turn
+        </h2>
+
+        <!-- Game Board -->
+        <div id="game-board" class="grid grid-cols-3 gap-3 bg-gray-900 p-3 rounded-lg shadow-2xl">
+            <!-- Cells will be 9 divs. Images will be inserted here. -->
+            <div data-index="0" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="1" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="2" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="3" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="4" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="5" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="6" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="7" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+            <div data-index="8" class="cell w-24 h-24 md:w-32 md:h-32 bg-gray-800 rounded-lg flex items-center justify-center text-6xl md:text-7xl font-bold cursor-pointer transition-all duration-300 hover:bg-gray-700 shadow-md"></div>
+        </div>
+
+        <!-- Button Container -->
+        <div class="flex gap-4 mt-8">
+            <!-- Restart Button -->
+            <button id="restart-button" class="px-8 py-3 bg-gray-600 text-white rounded-lg text-xl font-semibold hover:bg-gray-500 transition-all duration-300 shadow-lg transform hover:scale-105">
+                Restart
+            </button>
+            <!-- Change Avatars Button -->
+            <button id="change-avatars-button" class="px-8 py-3 bg-indigo-600 text-white rounded-lg text-xl font-semibold hover:bg-indigo-500 transition-all duration-300 shadow-lg transform hover:scale-105">
+                Change Avatars
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for Win/Draw Message (renamed) -->
+    <div id="end-game-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="bg-gray-800 p-8 md:p-12 rounded-2xl shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-content">
+            <h2 id="message-text" class="text-4xl font-black mb-8">
+                <!-- Message goes here -->
+            </h2>
+            <button id="play-again-button" class="px-8 py-3 bg-indigo-600 text-white rounded-lg text-xl font-semibold hover:bg-indigo-500 transition-all duration-300 shadow-lg transform hover:scale-105">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            // Setup Screen
+            const setupScreen = document.getElementById('setup-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const player1Input = document.getElementById('player1-input');
+            const player1Preview = document.getElementById('player1-preview');
+            const player2Input = document.getElementById('player2-input');
+            const player2Preview = document.getElementById('player2-preview');
+            const startGameButton = document.getElementById('start-game-button');
+            const setupError = document.getElementById('setup-error');
+            
+            // Game Screen
+            const cells = document.querySelectorAll('.cell');
+            const statusDisplay = document.getElementById('status-display');
+            const restartButton = document.getElementById('restart-button');
+            const changeAvatarsButton = document.getElementById('change-avatars-button');
+
+            // End Game Modal
+            const modal = document.getElementById('end-game-modal');
+            const modalContent = document.getElementById('modal-content');
+            const messageText = document.getElementById('message-text');
+            const playAgainButton = document.getElementById('play-again-button');
+
+            // --- Game State ---
+            let gameActive = true;
+            let currentPlayer = 'X'; // 'X' is Player 1, 'O' is Player 2
+            let board = ['', '', '', '', '', '', '', '', ''];
+            let playerImages = {
+                X: null, // Will store Player 1's image data URL
+                O: null  // Will store Player 2's image data URL
+            };
+
+            const winningConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]  // Diagonals
+            ];
+
+            // --- Functions ---
+
+            /**
+             * Handles image upload, reads the file, and displays a preview.
+             */
+            function handleImageUpload(event, player, previewElement) {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                
+                // Use FileReader to read the image as a Data URL
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageUrl = e.target.result;
+                    playerImages[player] = imageUrl; // Store the image URL
+                    previewElement.src = imageUrl;   // Show the preview
+                };
+                reader.readAsDataURL(file);
+            }
+
+            /**
+             * Handles starting the game after avatars are set.
+             */
+            function handleStartGame() {
+                // Check if both images are uploaded
+                if (!playerImages.X || !playerImages.O) {
+                    setupError.classList.remove('hidden');
+                    return;
+                }
+
+                // Hide setup error
+                setupError.classList.add('hidden');
+                
+                // Hide setup screen and show game screen
+                setupScreen.classList.add('hidden');
+                gameScreen.classList.add('flex'); // Use flex to show it
+                gameScreen.classList.remove('hidden');
+
+                // Ensure game state is fresh
+                handleRestartGame();
+                statusDisplay.innerHTML = "Player 1's Turn";
+            }
+            
+            /**
+             * Handles going back to the avatar setup screen.
+             */
+            function handleChangeAvatars() {
+                // Hide game screen and show setup screen
+                gameScreen.classList.add('hidden');
+                gameScreen.classList.remove('flex');
+                setupScreen.classList.remove('hidden');
+                
+                // Reset the game state
+                handleRestartGame();
+            }
+
+            /**
+             * Handles a click on a cell
+             */
+            function handleCellClick(e) {
+                const clickedCell = e.currentTarget; // Use currentTarget
+                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+                if (board[clickedCellIndex] !== '' || !gameActive) {
+                    return;
+                }
+
+                updateCell(clickedCell, clickedCellIndex);
+                checkResult();
+            }
+
+            /**
+             * Updates the board array and the cell's HTML with the player's image
+             */
+            function updateCell(cell, index) {
+                board[index] = currentPlayer;
+                const imageUrl = playerImages[currentPlayer];
+                
+                // Set the cell's content to be the player's image
+                cell.innerHTML = `<img src="${imageUrl}" alt="Player ${currentPlayer}" class="w-full h-full object-cover rounded-lg">`;
+            }
+
+            /**
+             * Switches the current player and updates the status
+             */
+            function switchPlayer() {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusDisplay.innerHTML = `${currentPlayer === 'X' ? 'Player 1' : 'Player 2'}'s Turn`;
+            }
+
+            /**
+             * Checks for a win or draw
+             */
+            function checkResult() {
+                let roundWon = false;
+                let winningCombo = [];
+
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const winCondition = winningConditions[i];
+                    const a = board[winCondition[0]];
+                    const b = board[winCondition[1]];
+                    const c = board[winCondition[2]];
+
+                    if (a === '' || b === '' || c === '') {
+                        continue;
+                    }
+
+                    if (a === b && b === c) {
+                        roundWon = true;
+                        winningCombo = winCondition;
+                        break;
+                    }
+                }
+
+                if (roundWon) {
+                    gameActive = false;
+                    highlightWinningCells(winningCombo);
+                    const winnerName = currentPlayer === 'X' ? 'Player 1' : 'Player 2';
+                    setTimeout(() => showEndGameModal(`${winnerName} Wins!`), 500);
+                    return;
+                }
+
+                if (!board.includes('')) {
+                    gameActive = false;
+                    setTimeout(() => showEndGameModal('Game is a Draw!'), 500);
+                    return;
+                }
+
+                switchPlayer();
+            }
+
+            /**
+             * Highlights the three winning cells
+             */
+            function highlightWinningCells(combo) {
+                combo.forEach(index => {
+                    cells[index].classList.add('win');
+                });
+            }
+
+            /**
+            * Shows the end-game modal message
+            */
+            function showEndGameModal(message) {
+                messageText.innerHTML = message;
+                modal.classList.remove('hidden');
+                modal.classList.add('opacity-100');
+                modalContent.classList.add('scale-100');
+            }
+
+            /**
+            * Hides the end-game modal
+            */
+            function hideEndGameModal() {
+                modalContent.classList.remove('scale-100');
+                modal.classList.remove('opacity-100');
+                modal.classList.add('hidden');
+            }
+
+            /**
+             * Resets the game to its initial state (keeps avatars)
+             */
+            function handleRestartGame() {
+                gameActive = true;
+                currentPlayer = 'X'; // Player 1 always starts
+                board = ['', '', '', '', '', '', '', '', ''];
+                
+                statusDisplay.innerHTML = "Player 1's Turn";
+                
+                cells.forEach(cell => {
+                    cell.innerHTML = ''; // Clear the images
+                    cell.classList.remove('win'); // Remove win highlight
+                });
+
+                hideEndGameModal();
+            }
+
+            // --- Event Listeners ---
+            
+            // Setup Listeners
+            player1Input.addEventListener('change', (e) => handleImageUpload(e, 'X', player1Preview));
+            player2Input.addEventListener('change', (e) => handleImageUpload(e, 'O', player2Preview));
+            startGameButton.addEventListener('click', handleStartGame);
+
+            // Game Listeners
+            cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+            restartButton.addEventListener('click', handleRestartGame);
+            
+            // Add listener for the change avatars button
+            changeAvatarsButton.addEventListener('click', handleChangeAvatars);
+
+            // Add listener for the play again button in the modal
+            playAgainButton.addEventListener('click', handleRestartGame);
+            
+            // Close modal if clicking outside the content
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    // We call handleRestartGame to close modal and reset board
+                    handleRestartGame(); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
